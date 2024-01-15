@@ -36,7 +36,7 @@ $G(s) = \frac{\Omega(s)}{V(s)} = \frac{Kt}{(Js+b)(Ls+R)+KtKe} \$
 
 ### Entrada de Tensão do PID
 
-A entrada de tensão (\(V_{\text{in}}(t)\)) para o PID seria a tensão aplicada ao motor (V(t)).
+A entrada de tensão V(t) para o PID seria a tensão aplicada ao motor (V(t)).
 
 ### Requisitos do Sistema e Ganhos PID
 
@@ -363,14 +363,14 @@ void setup()
 
 int main(int argc, char *argv[])
 {
-    // Configurações iniciais (se necessário) na função setup()
+
     setup();
 
     while (1)
     { 
-        // Leitura do potenciômetro (se necessário)
-        // int potValue = analogRead(potPin);
-        // uiContador = map(potValue, 0, 1023, 0, 9);
+        // Leitura do potenciômetro
+        int potValue = analogRead(potPin);
+        uiContador = map(potValue, 0, 1023, 0, 9);
 
         // Ajuste direto da variável de referência (removendo lógica de botões)
         int vref = 5;  // Valor desejado (substitua com seu valor real)
@@ -391,14 +391,12 @@ int main(int argc, char *argv[])
         PIDController controller;
         PIDController_Init(&controller);
 
-        // measurement = Sensor_update();
+        measurement = Sensor_update();
         control_action = PIDController_Update(&controller, setpoint, measurement);
     }
     VCS_CloseDevice(1);
     return 0;
 }
-
-
 ```
 ## Compilação
 

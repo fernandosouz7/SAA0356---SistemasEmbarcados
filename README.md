@@ -5,6 +5,7 @@ A automação de esteiras de academia demanda sistemas de controle eficientes pa
 ## Metodologia:
 
 ### 1. Simulação no Simulink:
+
     A simulação no Simulink desempenha um papel crucial no desenvolvimento do sistema de controle para a esteira de academia, oferecendo uma abordagem virtual para avaliar e aprimorar o desempenho do motor DC MAXON 118754 e ajustar os controladores PID.
 
     O processo inicia com a criação de um modelo Simulink detalhado que representa a malha de controle fechada. Para modelar as características específicas do motor DC MAXON 118754, são utilizados blocos que consideram detalhes como resistência (R), indutância (L), constante de torque (Kt) e constante de velocidade angular (Kv). A dinâmica do motor é representada por meio de blocos de função de transferência, permitindo uma simulação precisa do comportamento do sistema.
@@ -20,6 +21,7 @@ A automação de esteiras de academia demanda sistemas de controle eficientes pa
     Essa fase de simulação no Simulink oferece uma plataforma valiosa para entender e ajustar o sistema de controle da esteira de academia antes da implementação prática. A análise minuciosa dos resultados da simulação é essencial para um design eficiente e confiável do sistema de controle, contribuindo para o sucesso do projeto.
 
 ### 2. Tuning dos Controladores PID:
+
     A etapa de tuning dos controladores PID é fundamental para otimizar a resposta do sistema, garantindo estabilidade e eficiência frente a variações de referência e perturbações. No contexto do projeto da esteira de academia, a abordagem para encontrar os ganhos do PID é uma escolha estratégica com impacto direto no comportamento dinâmico do sistema.
 
     Para esse projeto, optamos por utilizar o método de Ziegler-Nichols, um método clássico e amplamente reconhecido. Nessa abordagem, o processo inicia com a configuração inicial dos ganhos PID, onde o ganho proporcional (Kp) é baixo, e os ganhos integral (Ki) e derivativo (Kd) são inicialmente nulos.

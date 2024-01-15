@@ -39,7 +39,7 @@ A automação de esteiras de academia demanda sistemas de controle eficientes pa
     É importante mencionar que, caso necessário, ajustes iterativos podem ser realizados para refinar ainda mais os ganhos PID, otimizando o desempenho do sistema em condições específicas.
 
     A escolha do método de Ziegler-Nichols proporciona uma abordagem sistemática e amplamente aceita para o tuning dos controladores PID, equilibrando a estabilidade do sistema com uma resposta dinâmica eficaz. Este processo contribui significativamente para a eficiência e desempenho do sistema de controle da esteira de academia.
-</prev>
+</pre>
 ### Simulação Via Wokwi:
 
 A simulação no Wokwi desempenha um papel fundamental na validação e compreensão do sistema de controle PID proposto para a esteira de academia. Vamos explorar minuciosamente como a simulação é configurada e seu propósito no desenvolvimento do projeto:

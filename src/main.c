@@ -43,8 +43,8 @@ int main(int argc, char *argv[])
         int potValue = analogRead(potPin);
         uiContador = map(potValue, 0, 1023, 0, 9);
 
-        // Ajuste direto da variável de referência (removendo lógica de botões)
-        int vref = 5;  // Valor desejado (substitua com seu valor real)
+        // Ajuste direto da variável de referência
+        int vref = 5;
         setpoint = vref * r;
 
         // Os parâmetros das funções VCS_ReadCANFrame e VCS_GetVelocityls precisam ser definidos ainda

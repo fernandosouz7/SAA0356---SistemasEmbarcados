@@ -1,6 +1,7 @@
 ## Alunos
 
 Fernando dos Santos de Souza - 9311560 (Desenvolvimento das simulações, códigos e relatório)
+
 Paulo Lopes Carvalhaes - 10747502 (Desenvolvimento das simulações, códigos e relatório)
 
 ## Introdução

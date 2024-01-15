@@ -4,8 +4,8 @@ A automação de esteiras de academia demanda sistemas de controle eficientes pa
 
 ## Metodologia:
 
-### 1. Simulação no Simulink:
-
+### Simulação no Simulink:
+<pre>
     A simulação no Simulink desempenha um papel crucial no desenvolvimento do sistema de controle para a esteira de academia, oferecendo uma abordagem virtual para avaliar e aprimorar o desempenho do motor DC MAXON 118754 e ajustar os controladores PID.
 
     O processo inicia com a criação de um modelo Simulink detalhado que representa a malha de controle fechada. Para modelar as características específicas do motor DC MAXON 118754, são utilizados blocos que consideram detalhes como resistência (R), indutância (L), constante de torque (Kt) e constante de velocidade angular (Kv). A dinâmica do motor é representada por meio de blocos de função de transferência, permitindo uma simulação precisa do comportamento do sistema.
@@ -20,7 +20,7 @@ A automação de esteiras de academia demanda sistemas de controle eficientes pa
 
     Essa fase de simulação no Simulink oferece uma plataforma valiosa para entender e ajustar o sistema de controle da esteira de academia antes da implementação prática. A análise minuciosa dos resultados da simulação é essencial para um design eficiente e confiável do sistema de controle, contribuindo para o sucesso do projeto.
 
-### 2. Tuning dos Controladores PID:
+### Tuning dos Controladores PID:
 
     A etapa de tuning dos controladores PID é fundamental para otimizar a resposta do sistema, garantindo estabilidade e eficiência frente a variações de referência e perturbações. No contexto do projeto da esteira de academia, a abordagem para encontrar os ganhos do PID é uma escolha estratégica com impacto direto no comportamento dinâmico do sistema.
 
@@ -39,8 +39,8 @@ A automação de esteiras de academia demanda sistemas de controle eficientes pa
     É importante mencionar que, caso necessário, ajustes iterativos podem ser realizados para refinar ainda mais os ganhos PID, otimizando o desempenho do sistema em condições específicas.
 
     A escolha do método de Ziegler-Nichols proporciona uma abordagem sistemática e amplamente aceita para o tuning dos controladores PID, equilibrando a estabilidade do sistema com uma resposta dinâmica eficaz. Este processo contribui significativamente para a eficiência e desempenho do sistema de controle da esteira de academia.
-
-### 3. Simulação Via Wokwi:
+</prev>
+### Simulação Via Wokwi:
 
 A simulação no Wokwi desempenha um papel fundamental na validação e compreensão do sistema de controle PID proposto para a esteira de academia. Vamos explorar minuciosamente como a simulação é configurada e seu propósito no desenvolvimento do projeto:
 

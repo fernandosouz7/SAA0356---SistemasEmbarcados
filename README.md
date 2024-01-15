@@ -61,6 +61,8 @@ A execução da simulação proporciona uma visão aprofundada do comportamento 
 
 Ajustes iterativos nos ganhos PID e nos parâmetros do modelo são realizados para otimizar a resposta do sistema. Diferentes configurações são testadas, e a simulação é refinada para garantir um desempenho robusto em uma variedade de condições operacionais.
 
+![Captura de tela 2024-01-14 210504](https://github.com/fernandosouz7/SAA0356---SistemasEmbarcados/assets/97545209/896a1fbd-d07d-4ee0-bdcc-a5f94751185c)
+
 ### Tuning dos Controladores PID:
 
 A etapa de tuning dos controladores PID é fundamental para otimizar a resposta do sistema, garantindo estabilidade e eficiência frente a variações de referência e perturbações. No contexto do projeto da esteira de academia, a abordagem para encontrar os ganhos do PID é uma escolha estratégica com impacto direto no comportamento dinâmico do sistema.
@@ -98,11 +100,77 @@ A simulação no Wokwi desempenha um papel fundamental na validação e compreen
 
    - Arduino Uno: O Arduino Uno é o controlador sistema, onde o código implementa o algoritmo de controle PID e interage com os demais componentes para gerenciar a resposta da esteira.
 
+![Captura de tela 2024-01-14 233419](https://github.com/fernandosouz7/SAA0356---SistemasEmbarcados/assets/97545209/0bec0d27-bef1-4e36-8a95-05f7865fda63)
+
+
 #### 2. Implementação do Controle PID:
 
    - Algoritmo PID: O código implementa o algoritmo de controle PID, compreendendo o cálculo do erro entre a referência e a leitura da velocidade simulada, juntamente com os termos integral e derivativo.
 
    - Ajuste dos Parâmetros PID: Os parâmetros do controlador PID (Kp, Ki, Kd) são ajustados conforme as características específicas do motor e da esteira, garantindo uma resposta eficaz e estável.
+
+     #include <Servo.h>
+````
+// Constantes do controle PID
+double Kp = 0.1;
+double Ki = 0.2;
+double Kd = 0.0;
+
+// Variáveis de controle PID
+double setpoint = 0;
+double actualSpeed = 0;
+double error = 0;
+double integral = 0;
+double derivative = 0;
+double output = 0;
+
+const int POT_PIN = A1;      // Pino analógico para o potenciômetro de setpoint
+const int SERVO_PIN = 9;     // Pino de controle do servo
+Servo meuServo;              // Objeto Servo para controlar o servo motor
+
+unsigned long previousMillis = 0;
+const long interval = 100; // Intervalo para simular controle de velocidade (ajuste conforme necessário)
+
+void setup() {
+  pinMode(POT_PIN, INPUT);
+  meuServo.attach(SERVO_PIN); // Inicializa o objeto Servo com o pino do servo
+  Serial.begin(9600);
+}
+
+void loop() {
+  unsigned long currentMillis = millis();
+
+  // Ajusta a velocidade a cada intervalo de tempo
+  if (currentMillis - previousMillis >= interval) {
+    previousMillis = currentMillis;
+
+    // Leitura da referência de velocidade do potenciômetro
+    setpoint = map(analogRead(POT_PIN), 0, 1023, -90, 90); // Use um intervalo de -90 a 90 para velocidade
+
+    // Cálculos do PID
+    error = setpoint - actualSpeed;
+    integral += error;
+    derivative = error - output;
+
+    // Fórmula PID
+    output = Kp * error + Ki * integral + Kd * derivative;
+
+    // Limitar a saída para evitar valores extremos
+    output = constrain(output, -90, 90); // Ajuste para o intervalo de velocidade desejado
+
+    // Aplicação do resultado do PID (controle do servo)
+    meuServo.writeMicroseconds(1500 + output * 10); // Ajuste conforme necessário
+
+    // Saída de dados para o monitor serial (opcional)
+    Serial.print("Setpoint: ");
+    Serial.print(setpoint);
+    Serial.print(", Actual Speed: ");
+    Serial.print(actualSpeed);
+    Serial.print(", Output: ");
+    Serial.println(output);
+  }
+}
+````
 
 #### 3. Visualização e Análise:
 
@@ -128,5 +196,160 @@ A simulação no Wokwi desempenha um papel fundamental na validação e compreen
 
    - Ajustes no Tuning: Caso seja necessário otimizar o desempenho, a análise do gráfico pode sugerir ajustes nos parâmetros PID (Kp, Ki, Kd) para reduzir overshooting, tempo de estabilização, ou outros comportamentos indesejados.
 
-O gráfico gerado no Monitor Serial serve como uma ferramenta poderosa para entender o comportamento dinâmico do sistema de controle PID proposto, facilitando a otimização e aprimoramento do desempenho da esteira de academia.
+![Captura de tela 2024-01-14 235020](https://github.com/fernandosouz7/SAA0356---SistemasEmbarcados/assets/97545209/fa350bbb-9a60-4935-8a91-92e99d962588)
 
+### Protocolo CAN
+
+A placa EPOS2 70/10 é um controlador digital de posição modular desenvolvido pela Maxon. Ela é adequada para uma gama de motores, incluindo motores DC com escovas com encoder e motores EC sem escobillas com sensores Hall e encoder, cobrindo uma faixa de potência de 80 a 700 watts. Ela Suporta encoders digitais incrementais (2 e 3 canais, diferenciais), sensores Hall digitais (para motores EC), encoders absolutos (SSI) e encoders analógicos incrementais (2 canais, diferenciais). Entre seus protocolos de comunicação compatíveis, inclui interfaces RS232, USB (velocidade total), CAN, além de suporte para CANopen. Possui várias funções de gateway, como RS232-to-CAN e USB-to-CAN.\\
+Quanto ao uso, a EPOS2 70/10 é empregada para controlar a posição, velocidade e corrente de motores em diversas aplicações industriais e de automação. Sua flexibilidade, alta eficiência e ampla gama de compatibilidade com diferentes tipos de motores e encoders a tornam uma solução versátil para muitos cenários que requerem controle preciso de movimento.
+
+![EPOS2_image1](https://github.com/fernandosouz7/SAA0356---SistemasEmbarcados/assets/97545209/ff17ad5c-d500-423c-9980-3d5a76b9080b)
+
+As funções de comunicação CAN (Controller Area Network) da placa EPOS2 70/10 da Maxon são bastante relevantes, especialmente para aplicações que exigem integração com sistemas de controle e automação industrial. A comunicação CAN é um protocolo robusto usado para permitir a comunicação confiável entre diversos dispositivos eletrônicos, como controladores de motor, sensores e atuadores, em ambientes industriais. Vamos detalhar algumas das principais funções de comunicação CAN desta placa:
+CAN e CANopen:
+
+A EPOS2 70/10 suporta o protocolo CAN, um padrão de comunicação serial para redes de dispositivos.
+Incorpora também o CANopen, que é um protocolo de comunicação e um perfil de dispositivo para sistemas embarcados usados em automação. O CANopen permite a fácil integração de dispositivos de diferentes fabricantes.
+
+A placa segue o CANopen application layer DS-301, que define os aspectos básicos de comunicação e dados em um sistema CANopen.
+Implementa também os frameworks DSP-305 e os perfis de controle de movimento DSP-402, que estabelecem padrões para o controle de dispositivos de automação, como motores e atuadores.
+
+A EPOS2 70/10 possui funcionalidades de gateway, como RS232-to-CAN e USB-to-CAN, que permitem a conversão de sinais de um padrão de comunicação para outro, facilitando a integração com sistemas que não são nativamente compatíveis com CAN.
+
+Através da interface CAN, é possível programar e configurar a EPOS2 70/10, ajustando parâmetros como limites de velocidade, aceleração, controle de posição, entre outros.
+A placa pode ser configurada para operar em diversos modos, como controle de posição, velocidade ou corrente, utilizando as instruções e parâmetros definidos no protocolo CANopen.
+
+Em sistemas complexos que envolvem múltiplos controladores e dispositivos, a comunicação CAN permite a sincronização e coordenação de ações entre estes dispositivos.
+Isso é especialmente útil em aplicações onde vários motores precisam operar de forma coordenada, como em linhas de montagem automatizadas, robótica e sistemas de transporte.
+
+Através da rede CAN, também é possível realizar diagnósticos e monitorar o estado e desempenho da EPOS2 70/10, incluindo a leitura de códigos de erro, monitoramento de temperatura e desempenho operacional.
+Em resumo, as funções de comunicação CAN da EPOS2 70/10 desempenham um papel vital na integração, controle, monitoramento e diagnóstico em sistemas automatizados e de controle de movimento, tornando-a uma escolha robusta e flexível para diversas aplicações industriais e de automação
+
+![CAN_image1](https://github.com/fernandosouz7/SAA0356---SistemasEmbarcados/assets/97545209/0a116c52-90fb-4509-af2c-6c643830001b)
+
+##### Uso do Protocolo CAN na EPOS2 70/10
+
+##### Especificações de Conexão CAN
+
+A EPOS2 70/10 utiliza pinos específicos para o protocolo CAN, conforme indicado no datasheet.
+
+Para a placa Colibri VF50, os pinos de comunicação CAN são o 63 para receiver (RX) e 55 para transmitter (TX).
+
+Detalhes na implementação do cabeamento devem seguir as especificações, incluindo a adição de um resistor de 120 Ohms entre CAN-H e CAN-L, espaçamento máximo de 30 cm entre os hardwares no barramento, entrelaçamento dos cabos CAN_L e CAN_H, e blindagem eletromagnética.
+
+##### Bibliotecas e Funções para Protocolo CAN
+
+Para se comunicar com a EPOS2 70/10 utilizando o protocolo CAN, é necessário utilizar bibliotecas específicas. Segundo o guia "EPOS Command Library", a biblioteca apropriada para Linux é a "libEposCmd.so".
+
+As funções principais para a utilização do protocolo CAN incluem:
+
+- `VCS_Send_CAN_Frame()`: Enviar dados pela rede CAN.
+- `VCS_Read_CAN_Frame()`: Receber dados pela rede CAN.
+
+Para iniciar a comunicação entre a EPOS e a placa, a função `VCS_OpenDevice()` é utilizada.
+
+É importante configurar corretamente os parâmetros da `VCS_OpenDevice()`, utilizando funções como `VCS_GetDeviceNameSelection()`, `VCS_GetProtocolStackNameSelection()`, `VCS_Get_InterfaceNameSelection()`, e `VCS_GetPortNameSelection()`. Por exemplo: `VCS_OpenDevice(char* EPOS2, char* CANopen, char* , char* CAN0)`.
+
+Ao final do código, a porta da EPOS deve ser fechada usando a função `VCS_CloseDevice(1)`.
+
+##### Identificação de Motor e Encoder
+
+Para identificar o tipo e parâmetros do motor, as funções `VCS_SetMotorType()` e `VCS_SetDcMotorParameterEx()` são utilizadas.
+
+Da mesma forma, para o encoder, as funções `VCS_SetSensorType()` e `VCS_SetIncEncoderParameter()` são utilizadas.
+
+##### Controle PID e Configurações
+
+A biblioteca oferece funções prontas para controle PID, como `VCS_SetControllerGain()`. Para configurar entradas e saídas digitais, funções como `VCS_DigitalInputConfiguration()` e `VCS_DigitalOutputConfiguration()` são utilizadas.
+
+Para entradas/saídas analógicas, as funções `VCS_AnalogInputConfiguration()` e `VCS_AnalogOutputConfiguration()` são empregadas
+
+##### Leitura e Controle de Velocidade
+
+Para ler a velocidade com o encoder, a função `VCS_GetVelocityls()` é utilizada.
+
+Para controlar a velocidade do motor, as funções `VCS_SetOperationMode()` ou `VCS_ActivateVelocityMode()` e `VCS_SetVelocityMust()` são empregadas.
+
+Este guia serve como um ponto de partida, sendo essencial consultar a documentação completa para ajustes específicos conforme as necessidades da aplicação.
+
+#### Conexão entre Placa VS50 Colibri Viola e EPOS2 70/10
+
+Para estabelecer a comunicação entre a placa VS50 Colibri Viola e a EPOS2 70/10, é necessário seguir corretamente as conexões físicas e configurar os parâmetros adequados. Abaixo, estão os passos para realizar a ligação:
+
+##### Conexão Física:
+
+- Pinos CAN na EPOS2 70/10:
+  - Consulte o datasheet da EPOS2 70/10 para identificar os pinos de comunicação CAN. Geralmente, são utilizados CAN_H e CAN_L para a transmissão e recepção de dados.
+
+- Pinos CAN na VS50 Colibri Viola:
+  - Consulte o datasheet da placa Colibri Viola para identificar os pinos de comunicação CAN. Eles são geralmente denominados como RX (Receiver) e TX (Transmitter).
+
+- Cabeamento CAN:
+  - Utilize cabos CAN de qualidade, garantindo que a distância entre os dispositivos não ultrapasse os limites especificados (geralmente até 30 cm).
+  - Adicione um resistor de terminação de 120 Ohms entre os fios CAN_H e CAN_L, garantindo a integridade do sinal.
+
+- Entrelaçamento de Cabos:
+  - Entrelace os cabos CAN_H e CAN_L para reduzir interferências eletromagnéticas.
+
+- Blindagem:
+  - Se possível, utilize cabos com blindagem para minimizar interferências externas.
+
+- Alimentação:
+  - Certifique-se de que ambos os dispositivos estejam devidamente alimentados.
+
+##### Configuração de Parâmetros:
+
+- Protocolo CAN:
+  - Certifique-se de que ambos os dispositivos suportam e estão configurados para o protocolo CAN.
+
+- Baud Rate:
+  - Configure o mesmo Baud Rate (taxa de transmissão) nos dois dispositivos. Geralmente, valores comuns são 125 kbps, 250 kbps, 500 kbps ou 1 Mbps.
+
+- Endereçamento:
+  - Atribua endereços únicos para cada dispositivo na rede CAN. Isso é crucial para garantir que os dados sejam enviados e recebidos corretamente.
+
+- Modo de Operação da EPOS2 70/10:
+  - Configure a EPOS2 70/10 para operar no modo desejado (por exemplo, controle de posição, controle de velocidade) através dos parâmetros adequados.
+
+- Configuração da Colibri Viola:
+  - Consulte o manual da Colibri Viola para configurar corretamente os pinos CAN, especificando as funções de RX e TX.
+
+- Teste de Comunicação:
+  - Antes de iniciar a aplicação completa, realize testes de comunicação básicos para garantir que os dispositivos possam se comunicar corretamente.
+
+## Resultados
+
+A seguir, destacamos os resultados obtidos:
+
+### Desempenho do Controle PID:
+
+- Tuning dos Controladores PID:
+  - Os controladores PID foram ajustados utilizando técnicas de tuning para otimizar o desempenho do sistema em termos de tempo de resposta, overshoot e estabilidade.
+
+- Resposta ao Degrau:
+  - Apesar da impossibilidade de testes físicos, foram realizados testes virtuais de resposta ao degrau para avaliar o comportamento dinâmico do sistema em relação a mudanças abruptas na referência de velocidade.
+
+- Gráficos de Desempenho:
+  - Gráficos foram gerados na simulação para visualizar a resposta do sistema em diferentes condições de operação, destacando o comportamento do motor em termos de velocidade e posição.
+
+### Simulação no Wokwi:
+
+- Simulação do Sistema:
+  - Utilizando o simulador online Wokwi, foi possível simular o modelo do sistema desenvolvido no Simulink, permitindo uma análise visual e interativa do comportamento do motor e do controle PID.
+
+- Validação dos Parâmetros:
+  - Os resultados da simulação foram comparados com as expectativas teóricas e os parâmetros do sistema, verificando a validade das configurações e do modelo adotado.
+
+### Considerações Finais:
+
+- Estabilidade do Sistema:
+  - A estabilidade do sistema foi verificada virtualmente em diferentes condições operacionais, garantindo que o motor DC se mantenha controlado e responsivo.
+
+- Conclusões sobre o Controle PID:
+  - Com base nos resultados virtuais obtidos, são tiradas conclusões sobre a eficácia do controle PID implementado, identificando pontos fortes e possíveis melhorias.
+
+Esses resultados virtuais proporcionam uma compreensão abrangente do desempenho do sistema, possibilitando ajustes adicionais, se necessário, para atender aos requisitos e objetivos estabelecidos no projeto, considerando a impossibilidade de realizar testes físicos.
+
+## Conclusão
+
+Não foi possível para nós fazermos os testes em laboratório, pois trabalhamos durante a semana o que dificultou a implementação no circuito físico. Contudo, fizemos as simulações possíveis para validar o projeto proposto.

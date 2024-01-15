@@ -1,3 +1,7 @@
+## Alunos
+
+Fernando dos Santos de Souza - 9311560 (Desenvolvimento das simulações, códigos e relatório)
+
 ## Introdução
 
 A automação de esteiras de academia demanda sistemas de controle eficientes para assegurar um desempenho preciso e estável. Este projeto visa desenvolver um sistema de controle PID para um motor DC MAXON 118754, utilizando a placa VS50 Colibri Viola e a EPOS2 70/10 por meio do protocolo CAN. O enfoque recairá na simulação do sistema no Simulink e na implementação de códigos para interação com a EPOS2 70/10 via protocolo CAN.
@@ -102,6 +106,7 @@ A simulação no Wokwi desempenha um papel fundamental na validação e compreen
 
 ![Captura de tela 2024-01-14 233419](https://github.com/fernandosouz7/SAA0356---SistemasEmbarcados/assets/97545209/0bec0d27-bef1-4e36-8a95-05f7865fda63)
 
+Link da simulação: https://wokwi.com/projects/386951030467101697
 
 #### 2. Implementação do Controle PID:
 
@@ -109,8 +114,8 @@ A simulação no Wokwi desempenha um papel fundamental na validação e compreen
 
    - Ajuste dos Parâmetros PID: Os parâmetros do controlador PID (Kp, Ki, Kd) são ajustados conforme as características específicas do motor e da esteira, garantindo uma resposta eficaz e estável.
 
-     #include <Servo.h>
 ````
+#include <Servo.h>
 // Constantes do controle PID
 double Kp = 0.1;
 double Ki = 0.2;
@@ -316,6 +321,111 @@ Para estabelecer a comunicação entre a placa VS50 Colibri Viola e a EPOS2 70/1
 
 - Teste de Comunicação:
   - Antes de iniciar a aplicação completa, realize testes de comunicação básicos para garantir que os dispositivos possam se comunicar corretamente.
+
+## Implementação
+
+O código implementado utiliza a lógica de um potenciômetro para realizar o controle de velocidade, assim como o simulado no Wokwi.
+
+```
+#include <sys/time.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include "pid.h"
+#include "libEposCmd.so"
+
+#define MOTOR_CAN_ID  0x01  // Endereço CAN do motor
+#define ENCODER_CAN_ID 0x02  // Endereço CAN do encoder
+
+
+int r = 0.1;
+
+float measurement;
+float setpoint;
+float control_action;
+
+void setup()
+{
+    Serial.begin(9600);
+
+    //Configurar o tipo de motor e parâmetros do motor
+    VCS_SetMotorType(VCS_GetMotorHandle(MOTOR_CAN_ID));
+    VCS_SetDcMotorParameterEx(VCS_GetMotorHandle(MOTOR_CAN_ID));
+
+    // Configurar o tipo de sensor e parâmetros do encoder
+    VCS_SetSensorType(VCS_GetSensorHandle(ENCODER_CAN_ID));
+    VCS_SetIncEncoderParameter(VCS_GetSensorHandle(ENCODER_CAN_ID));
+
+    // Iniciar o controlador PID, se necessário
+    PIDController controller;
+    PIDController_Init(&controller);
+
+}
+
+int main(int argc, char *argv[])
+{
+    // Configurações iniciais (se necessário) na função setup()
+    setup();
+
+    while (1)
+    { 
+        // Leitura do potenciômetro (se necessário)
+        // int potValue = analogRead(potPin);
+        // uiContador = map(potValue, 0, 1023, 0, 9);
+
+        // Ajuste direto da variável de referência (removendo lógica de botões)
+        int vref = 5;  // Valor desejado (substitua com seu valor real)
+        setpoint = vref * r;
+
+        // Os parâmetros das funções VCS_ReadCANFrame e VCS_GetVelocityls precisam ser definidos ainda
+        unsigned int KeyHandle = 123;  
+        unsigned int CobID = 456;
+        unsigned int Length = 7;     
+        unsigned int NodeId = 1; 
+        unsigned int pVelocityls[2]; 
+        unsigned int pErrorCode = 0; 
+        unsigned int Timeout = 1000; 
+        unsigned int ErrorCode = 0;
+
+        measurement = VCS_ReadCANFrame(KeyHandle, CobID, Length, VCS_GetVelocityls(KeyHandle, NodeId, pVelocityls, pErrorCode), Timeout, ErrorCode);
+
+        PIDController controller;
+        PIDController_Init(&controller);
+
+        // measurement = Sensor_update();
+        control_action = PIDController_Update(&controller, setpoint, measurement);
+    }
+    VCS_CloseDevice(1);
+    return 0;
+}
+
+
+```
+## Compilação
+
+Para realizar a compilação do código PID, é imprescindível configurar a toolchain através do SDK específico para a placa VF50. Isso se deve à distinção de arquitetura entre o processador da placa e o do host, requerendo, assim, o procedimento de compilação cruzada. O SDK pode ser obtido diretamente do portal da Toradex.
+
+Posteriormente, é necessário estabelecer a conexão via ethernet utilizando o protocolo SSH no terminal do host:
+
+
+    ssh root@192.168.1.100
+
+
+Para compilar o código e carregá-lo na placa, são necessários o seguintes comandos no terminal:
+
+
+    $CC -Wall main.c -o control
+    $CC -Wall pid.c -o pid
+
+    scp control root@192.168.1.100:/home/root
+    scp pid root@192.168.1.100:/home/root
+    scp pid.h root@192.168.1.100:/home/root
+    scp pid_constants.h root@192.168.1.100:/home/root
+
+O comando para rodar o código é o seguinte:
+
+
+    ./control
+
 
 ## Resultados
 

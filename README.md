@@ -19,9 +19,9 @@ A automação de esteiras de academia demanda sistemas de controle eficientes pa
     Ajustes iterativos nos ganhos PID e nos parâmetros do modelo são realizados para otimizar a resposta do sistema. Diferentes configurações são testadas, e a simulação é refinada para garantir um desempenho robusto em uma variedade de condições operacionais.
 
     Essa fase de simulação no Simulink oferece uma plataforma valiosa para entender e ajustar o sistema de controle da esteira de academia antes da implementação prática. A análise minuciosa dos resultados da simulação é essencial para um design eficiente e confiável do sistema de controle, contribuindo para o sucesso do projeto.
-
+<pre>
 ### Tuning dos Controladores PID:
-
+<pre>
     A etapa de tuning dos controladores PID é fundamental para otimizar a resposta do sistema, garantindo estabilidade e eficiência frente a variações de referência e perturbações. No contexto do projeto da esteira de academia, a abordagem para encontrar os ganhos do PID é uma escolha estratégica com impacto direto no comportamento dinâmico do sistema.
 
     Para esse projeto, optamos por utilizar o método de Ziegler-Nichols, um método clássico e amplamente reconhecido. Nessa abordagem, o processo inicia com a configuração inicial dos ganhos PID, onde o ganho proporcional (Kp) é baixo, e os ganhos integral (Ki) e derivativo (Kd) são inicialmente nulos.
@@ -39,7 +39,7 @@ A automação de esteiras de academia demanda sistemas de controle eficientes pa
     É importante mencionar que, caso necessário, ajustes iterativos podem ser realizados para refinar ainda mais os ganhos PID, otimizando o desempenho do sistema em condições específicas.
 
     A escolha do método de Ziegler-Nichols proporciona uma abordagem sistemática e amplamente aceita para o tuning dos controladores PID, equilibrando a estabilidade do sistema com uma resposta dinâmica eficaz. Este processo contribui significativamente para a eficiência e desempenho do sistema de controle da esteira de academia.
-</pre>
+    <pre>
 ### Simulação Via Wokwi:
 
 A simulação no Wokwi desempenha um papel fundamental na validação e compreensão do sistema de controle PID proposto para a esteira de academia. Vamos explorar minuciosamente como a simulação é configurada e seu propósito no desenvolvimento do projeto:
